@@ -3,6 +3,6 @@
 
 #include <string>
 
-std::string loadFile(const char* path);
+std::string loadFile(const char *path);
 
-#endif 
+#endif
