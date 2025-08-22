@@ -5,32 +5,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "character.hpp"
 #include "gpu.hpp"
-
+#include "helper.hpp"
 #include "cube.hpp"
 #include "shader_utils.hpp"
 
-static const char* VS_SRC = R"(
-#version 410 core
-layout (location = 0) in vec3 aPos;
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-void main() {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-}
-)";
-
-static const char* FS_SRC = R"(
-#version 410 core
-out vec4 FragColor;
-void main() { FragColor = vec4(0.6, 0.7, 1.0, 1.0); }
-)";
 
 static void framebuffer_size_callback(GLFWwindow*, int w, int h) {
     glViewport(0,0,w,h);
 }
 
 int main() {
+    
     if (!glfwInit()) { std::cerr << "GLFW init failed\n"; return 1; }
     // macOS: OpenGL 4.1 core
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -48,14 +33,19 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // Shaders
-    GLuint vs = compileShader(GL_VERTEX_SHADER, VS_SRC);
-    GLuint fs = compileShader(GL_FRAGMENT_SHADER, FS_SRC);
-    GLuint prog = linkProgram(vs, fs);
+    std::string vsSrc = Helper::loadFile("shaders/simple.vert");
+    std::string fsSrc = Helper::loadFile("shaders/simple.frag");
+
+GLuint vs = compileShader(GL_VERTEX_SHADER, vsSrc.c_str());
+GLuint fs = compileShader(GL_FRAGMENT_SHADER, fsSrc.c_str());
+GLuint prog = linkProgram(vs, fs);
     glUseProgram(prog);
     GLint uModel = glGetUniformLocation(prog, "model");
 
     GLint uView  = glGetUniformLocation(prog, "view");
     GLint uProj  = glGetUniformLocation(prog, "projection");
+    GLint uColor = glGetUniformLocation(prog, "uColor");
+
 
     // Matrices cam/proj
     glm::mat4 proj = glm::perspective(glm::radians(60.f), 800.f/600.f, 0.1f, 100.f);
@@ -66,6 +56,10 @@ int main() {
     GLuint cubeVAO = make_unit_cube();
 
     RigParams params; // tu peux modifier les tailles à l’oral
+    RigColors colors;
+    CharacterRenderer renderer(uModel, uColor, cubeVAO);
+renderer.setRig(params);
+renderer.setColors(colors);
     AnimMode mode = AnimMode::Walk;
 bool paused = false;
 
@@ -121,7 +115,8 @@ prevQ=kQ; prevW=kW; prevA=kA; prevS=kS; prevZ=kZ; prevX=kX;
         float t = (float)glfwGetTime();
 
         // dessiner le personnage articulé
-        draw_character(uModel, cubeVAO, params, t, mode, paused);
+            renderer.setRig(params);   // si tu as modifié params via Q/W/A/S/Z/X
+renderer.draw(t, mode, paused);
 
 
 
