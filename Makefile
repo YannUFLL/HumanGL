@@ -6,7 +6,7 @@ CFLAGS   = -O2 -Iinclude -I/opt/homebrew/include
 
 LDFLAGS  = -L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework CoreVideo -framework OpenGL
 
-SRC_CPP = src/main.cpp src/cube.cpp src/shader_utils.cpp src/character.cpp 
+SRC_CPP = src/main.cpp src/cube.cpp src/shader_utils.cpp src/character.cpp src/helper.cpp 
 SRC_C   = src/glad.c
 OBJ     = $(SRC_CPP:.cpp=.o) $(SRC_C:.c=.o)
 BIN     = humangl
@@ -25,4 +25,7 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
+	rm -f  $(OBJ)
+
+fclean: clean
 	rm -f $(BIN) $(OBJ)

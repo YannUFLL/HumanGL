@@ -33,8 +33,8 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // Shaders
-    std::string vsSrc = Helper::loadFile("shaders/simple.vert");
-    std::string fsSrc = Helper::loadFile("shaders/simple.frag");
+    std::string vsSrc = loadFile("shaders/simple.vert");
+    std::string fsSrc = loadFile("shaders/simple.frag");
 
 GLuint vs = compileShader(GL_VERTEX_SHADER, vsSrc.c_str());
 GLuint fs = compileShader(GL_FRAGMENT_SHADER, fsSrc.c_str());
